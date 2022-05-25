@@ -1,0 +1,3 @@
+[submodule "shared/zagrabi"]
+	path = shared/zagrabi
+	url = https://github.com/mmatokovi/zagrabi
