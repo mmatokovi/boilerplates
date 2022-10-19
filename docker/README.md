@@ -10,5 +10,4 @@ In the root directory of the project, execute:
 vagrant up
 vagrant ssh
 cd /vagrant
-lein koan run
 ```

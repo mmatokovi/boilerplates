@@ -1,0 +1,3 @@
+[submodule "vagrant/vagrant-zagrabi"]
+	path = vagrant/vagrant-zagrabi
+	url = https://github.com/mmatokovi/vagrant-zagrabi

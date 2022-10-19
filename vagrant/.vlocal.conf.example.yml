@@ -1,8 +1,0 @@
----
-project_name: zagrabi
-network:
-  ip_address: 192.168.33.77
-  hostname: zagrabi.io
-vbox:
-  memory: 2048
----
