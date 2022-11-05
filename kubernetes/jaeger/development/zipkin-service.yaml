@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin
+  labels:
+    app: jaeger
+    component: zipkin-endpoint
+spec:
+  selector:
+    app: jaeger
+  ports:
+    - port: 9411

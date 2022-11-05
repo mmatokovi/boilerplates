@@ -11,3 +11,7 @@ vagrant up
 vagrant ssh
 cd /vagrant
 ```
+
+## MySQL
+
+add docker image `docker pull mysql` run container `docker run --name mysql -e MYSQL_ROOT_PASSWORD=secret -d mysql:latest` open *mysql* `mysql -uroot -p`

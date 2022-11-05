@@ -1,3 +1,6 @@
 [submodule "vagrant/vagrant-zagrabi"]
 	path = vagrant/vagrant-zagrabi
 	url = https://github.com/mmatokovi/vagrant-zagrabi
+[submodule "docker/raspberry-pi"]
+	path = docker/raspberry-pi
+	url = https://github.com/mmatokovi/raspberry-pi

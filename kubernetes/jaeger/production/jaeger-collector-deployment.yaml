@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: jaeger-collector
+  labels:
+    app: jaeger
+    component: collector
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: jaeger
+      component: collector
+  template:
+    metadata:
+      labels:
+        app: jaeger
+        component: collector
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - jaeger
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: collector
+          image: jaegertracing/jaeger-collector:1.2.0
+          ports:
+            - containerPort: 14267
+              name: tchannel
+            - containerPort: 14268
+              name: http
+            - containerPort: 9411
+              name: zipkin
+          env:
+            - name: COLLECTOR_ZIPKIN_HTTP_PORT
+              value: "9411"
+            - name: CASSANDRA_SERVERS
+              value: "cassandra-0.cassandra,\
+                      cassandra-1.cassandra,\
+                      cassandra-2.cassandra"
+            - name: CASSANDRA_KEYSPACE
+              value: "jaeger_v1_dc1"
