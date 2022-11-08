@@ -5,10 +5,11 @@ They are based on automation and deployment tools such as Ansible, Docker , Vagr
 
 # Ansible Role: Docker
 
-Ansible role that installs Docker and Docker Compose.
+Ansible role that installs Docker and Docker Compose.  
+
+[Choosing a Name for Your Computer](https://www.rfc-editor.org/rfc/rfc1178)
 
 ## Requirements
-- Python 3. Python 2 is not supported.
 
 ## License
 [MIT](LICENSE)
