@@ -1,0 +1,961 @@
+---
+swagger: "2.0"
+info:
+  version: "3.0"
+  title: "APIGeolocation"
+  description: "API for GIS integration. Provides geolocation, risk zones and DGU address."
+host: "iltest2.crosig.group:6561"
+basePath: "/api/gis/v3"
+tags:
+- name: "DGU Address Data"
+  description: "Provides DGU address information."
+- name: "DGU Risk Data"
+  description: "Provides risk information based on the provided address or geolocation."
+schemes:
+- "https"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /cities:
+    get:
+      tags: 
+      - "DGU Address Data"
+      summary: "Returns complete city list from DGU."
+      description: "Returns complete city list from DGU."
+      operationId: "getCities"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - $ref: "#/parameters/X-IL-correlationID"
+        - $ref: "#/parameters/X-IL-externalID"
+        - $ref: "#/parameters/X-IL-processName"
+        - $ref: "#/parameters/X-IL-processID"
+        - $ref: "#/parameters/X-IL-sourceSystem"
+        - $ref: "#/parameters/X-IL-customerID"
+        - $ref: "#/parameters/X-IL-userID"
+        - $ref: "#/parameters/X-IL-language"
+        - $ref: "#/parameters/X-IL-externalTimestamp"
+        - $ref: "#/parameters/X-IL-attributes"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/CitiesResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"               
+                
+  /search/address:
+    get:
+      tags: 
+      - "DGU Address Data"
+      summary: "Returns DGU address and geolocation data from GIS."
+      description: "Returns DGU address and GIS geolocation information based on provided address information. In case the DGU address is found based on street CO ID and house number, response returns a full set of DGU address data including geocoordinates. In case of a partial match based only on street CO ID, response returns full set of DGU address data except house number and geocoordinates data."
+      operationId: "getSearchAddress"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - $ref: "#/parameters/X-IL-correlationID"
+        - $ref: "#/parameters/X-IL-externalID"
+        - $ref: "#/parameters/X-IL-processName"
+        - $ref: "#/parameters/X-IL-processID"
+        - $ref: "#/parameters/X-IL-sourceSystem"
+        - $ref: "#/parameters/X-IL-customerID"
+        - $ref: "#/parameters/X-IL-userID"
+        - $ref: "#/parameters/X-IL-language"
+        - $ref: "#/parameters/X-IL-externalTimestamp"
+        - $ref: "#/parameters/X-IL-attributes"
+        - name: "streetCoId"
+          in: "query"
+          description: "Street CO ID."
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: "houseNr"
+          in: "query"
+          description: "House number. Searchable only by exact house number."
+          required: false
+          type: "string"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/DGUAddressResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+                
+  /search/streets:
+    get:
+      tags: 
+      - "DGU Address Data"
+      summary: "Returns list of DGU streets from GIS."
+      description: "Returns street information list from DGU by DGU city ID and street name (exact or partially matched street name)."
+      operationId: "getSearchStreets"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - $ref: "#/parameters/X-IL-correlationID"
+        - $ref: "#/parameters/X-IL-externalID"
+        - $ref: "#/parameters/X-IL-processName"
+        - $ref: "#/parameters/X-IL-processID"
+        - $ref: "#/parameters/X-IL-sourceSystem"
+        - $ref: "#/parameters/X-IL-customerID"
+        - $ref: "#/parameters/X-IL-userID"
+        - $ref: "#/parameters/X-IL-language"
+        - $ref: "#/parameters/X-IL-externalTimestamp"
+        - $ref: "#/parameters/X-IL-attributes"
+        - name: "cityId"
+          in: "query"
+          description: "City ID from DGU codebook."
+          required: true
+          type: "string"
+        - name: "streetName"
+          in: "query"
+          description: "Street name. Search is done using partial matching based on the begginning of the street name with a wildcard at the end of the query."
+          required: false
+          type: "string"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/StreetsResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+
+  /search/houseNrs:
+    get:
+      tags: 
+      - "DGU Address Data"
+      summary: "Returns list of DGU house numbers from GIS."
+      description: "Returns house number information list from DGU by DGU street ID and house number (exact  or partially matched house number)."
+      operationId: "getSearchHouseNrs"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - $ref: "#/parameters/X-IL-correlationID"
+        - $ref: "#/parameters/X-IL-externalID"
+        - $ref: "#/parameters/X-IL-processName"
+        - $ref: "#/parameters/X-IL-processID"
+        - $ref: "#/parameters/X-IL-sourceSystem"
+        - $ref: "#/parameters/X-IL-customerID"
+        - $ref: "#/parameters/X-IL-userID"
+        - $ref: "#/parameters/X-IL-language"
+        - $ref: "#/parameters/X-IL-externalTimestamp"
+        - $ref: "#/parameters/X-IL-attributes"
+        - name: "streetId"
+          in: "query"
+          description: "Street ID from DGU codebook."
+          required: true
+          type: "string"
+        - name: "houseNr"
+          in: "query"
+          description: "House number. Search is done using partial matching based on the begginning of the house number with a wildcard at the end of the query."
+          required: false
+          type: "string"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/HouseNrsResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+                
+  /address/houseNr:
+    get:
+      tags: 
+      - "DGU Address Data"
+      summary: "Returns DGU address and geolocation data from GIS."
+      description: "Returns DGU address and GIS geolocation information based on provided DGU house number ID."
+      operationId: "getAddressHouseNr"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - $ref: "#/parameters/X-IL-correlationID"
+        - $ref: "#/parameters/X-IL-externalID"
+        - $ref: "#/parameters/X-IL-processName"
+        - $ref: "#/parameters/X-IL-processID"
+        - $ref: "#/parameters/X-IL-sourceSystem"
+        - $ref: "#/parameters/X-IL-customerID"
+        - $ref: "#/parameters/X-IL-userID"
+        - $ref: "#/parameters/X-IL-language"
+        - $ref: "#/parameters/X-IL-externalTimestamp"
+        - $ref: "#/parameters/X-IL-attributes"
+        - name: "houseNrId"
+          in: "query"
+          description: "House number ID from DGU codebook of the address."
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/DGUAddressResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+                
+  /risks/houseNr:
+    get:
+      tags: 
+      - "DGU Risk Data"
+      summary: "Returns risk data from GIS based on DGU house number ID."
+      description: "Returns a list of risk data from GIS for provided DGU house number ID and cover list."
+      operationId: "getRisksHouseNr"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - $ref: "#/parameters/X-IL-correlationID"
+        - $ref: "#/parameters/X-IL-externalID"
+        - $ref: "#/parameters/X-IL-processName"
+        - $ref: "#/parameters/X-IL-processID"
+        - $ref: "#/parameters/X-IL-sourceSystem"
+        - $ref: "#/parameters/X-IL-customerID"
+        - $ref: "#/parameters/X-IL-userID"
+        - $ref: "#/parameters/X-IL-language"
+        - $ref: "#/parameters/X-IL-externalTimestamp"
+        - $ref: "#/parameters/X-IL-attributes"
+        - name: "houseNrId"
+          in: "query"
+          description: "House number ID from DGU codebook used for retrieving risk information."
+          required: true
+          type: "string"
+        - name: "coverList"
+          in: "query"
+          description: "List of covers separated by a comma for which the risks should be returned (e.g. : 'riskname1,riskname2,riskname3,...')"
+          required: true
+          type: "array"
+          items:
+            type: "string"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/RisksResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"          
+                
+  /risks/geometry:
+    get:
+      tags: 
+      - "DGU Risk Data"
+      summary: "Returns risk data from DGU based on geocoordinates."
+      description: "Returns a list of risk data from GIS for provided covers and geocoordinates."
+      operationId: "getRisksGeometry"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - $ref: "#/parameters/X-IL-correlationID"
+        - $ref: "#/parameters/X-IL-externalID"
+        - $ref: "#/parameters/X-IL-processName"
+        - $ref: "#/parameters/X-IL-processID"
+        - $ref: "#/parameters/X-IL-sourceSystem"
+        - $ref: "#/parameters/X-IL-customerID"
+        - $ref: "#/parameters/X-IL-userID"
+        - $ref: "#/parameters/X-IL-language"
+        - $ref: "#/parameters/X-IL-externalTimestamp"
+        - $ref: "#/parameters/X-IL-attributes"
+        - name: "x"
+          in: "query"
+          description: "X geocoordinate of insured object."
+          required: true
+          type: "number"
+          format: "double"
+        - name: "y"
+          in: "query"
+          description: "Y geocoordinate of insured object."
+          required: true
+          type: "number"
+          format: "double"
+        - name: "coverList"
+          in: "query"
+          description: "List of covers separated by a comma for which the risks should be returned (e.g. : 'riskname1,riskname2,riskname3,...')"
+          required: true
+          type: "array"
+          items:
+            type: "string"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/RisksResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"          
+          
+parameters:
+  X-IL-correlationID:
+    name: "X-IL-correlationID"
+    in: header
+    required: false
+    type: "string"
+    description: "Unique ID used for linking of asynchronous messages"
+  X-IL-externalID:
+    name: "X-IL-externalID"
+    in: header
+    required: false
+    type: "string"
+    description: "Caller's unique ID"
+  X-IL-processName:
+    name: "X-IL-processName"
+    in: header
+    required: false
+    type: "string"
+    description: "Business process/flow name"
+  X-IL-processID:
+    name: "X-IL-processID"
+    in: header
+    required: false
+    type: "string"
+    description: "Business process/flow ID"
+  X-IL-sourceSystem:
+    name: "X-IL-sourceSystem"
+    in: header
+    required: true
+    type: "string"
+    description: "Name of the source system/caller's system"
+  X-IL-customerID:
+    name: "X-IL-customerID"
+    in: header
+    required: false
+    type: "string"
+    description: "Unique ID of the customer"
+  X-IL-userID:
+    name: "X-IL-userID"
+    in: header
+    required: false
+    type: "string"
+    description: "Unique ID of the user"
+  X-IL-language:
+    name: "X-IL-language"
+    in: header
+    required: false
+    type: "string"
+    description: "Language (ISO 639-1 code) in which data is requested (currently not used)"
+  X-IL-externalTimestamp:
+    name: "X-IL-externalTimestamp"
+    in: header
+    required: true
+    type: "string"
+    format: "date-time"
+    description: "Timestamp of the external system; mandatory (date-time format according to OpenAPI standard as defined by RFC 3339, e.g. for CEST: 2022-04-26T15:39:57.360+02:00)"
+  X-IL-attributes:
+    name: "X-IL-attributes"
+    in: header
+    required: false
+    type: "array"
+    items:
+      type: "string"
+    description: "Additional array of key-value attribute. Any attribute with the X-IL prefix which is not part of the above defined standard header fields will be put it this key-value array"
+    
+definitions:
+
+  DGUAddress:
+    description: "Address data from DGU codebook."
+    properties:
+      cityName:
+        type: "string"
+        description: "Name from DGU codebook of the address' city."
+      cityId:
+        type: "string"
+        description: "ID from DGU codebook  of the address' city."
+      postOfficeName:
+        type: "string"
+        description: "Name from DGU codebook of address' post office."
+      postOfficeNr:
+        type: "string"
+        description: "Number from DGU codebook of the address' post office."
+      streetName:
+        type: "string"
+        description: "Name from DGU codebook of address' street."
+      streetId:
+        type: "string"
+        description: "ID from DGU codebook of the address' street."
+      houseNr:
+        type: "string"
+        description: "House number from DGU codebook of the address."
+      houseNrId:
+        type: "string"
+        description: "ID from DGU codebook of the address' house number."
+      
+  DGUCity:
+    properties:
+      cityName:
+        type: "string"
+        description: "Name from DGU codebook of the address' city."
+      cityId:
+        type: "string"
+        description: "ID from DGU codebook  of the address' city."
+      postOfficeName:
+        type: "string"
+        description: "Name from DGU codebook of address' post office."
+      postOfficeNr:
+        type: "string"
+        description: "Number from DGU codebook of the address' post office."
+        
+  DGUStreet:
+    properties:
+      streetName:
+        type: "string"
+        description: "Name from DGU codebook of address' street."
+      streetId:
+        type: "string"
+        description: "ID from DGU codebook of the address' street."
+        
+  DGUHouseNr:
+    properties:
+      houseNr:
+        type: "string"
+        description: "House number from DGU codebook of the address."
+      houseNrId:
+        type: "string"
+        description: "ID from DGU codebook of the address' house number."
+      
+  DGUHouseNrAndGeocoordinates:
+    properties:
+      dguHouseNr:
+        $ref: "#/definitions/DGUHouseNr"
+      geocoordinates:
+        $ref: "#/definitions/Geocoordinates"
+        
+  Risks:
+    properties:
+      riskName:
+        type: "string"
+        description: "Name of the cover for which the risk is returned."
+      riskAllowed:
+        type: "boolean"
+        description: "Defines whether the returned risk is allowed to be included in the proposal for provided address."      
+      riskValue:
+        type: "string"
+        description: "Value of the cover for which the risk is returned"
+        
+  Geocoordinates:
+    properties:
+      x:
+        type: "number"
+        format: "double"
+      y:
+        type: "number"
+        format: "double"
+        
+  DGUAddressResponse:
+    properties:
+      dguAddress:
+        $ref: "#/definitions/DGUAddress"
+      geocoordinates:
+        $ref: "#/definitions/Geocoordinates"
+      result:
+        $ref: "#/definitions/Result"
+        
+  CitiesResponse:
+    properties:
+      dguCity:
+        type: "array"
+        items:
+          $ref: "#/definitions/DGUCity"
+      result:
+        $ref: "#/definitions/Result"
+        
+  StreetsResponse:
+    properties:
+      dguStreet:
+        type: "array"
+        items:
+          $ref: "#/definitions/DGUStreet"
+      result:
+        $ref: "#/definitions/Result"
+        
+  HouseNrsResponse:
+    properties:
+      dguHouseNrAndGeocoord:
+        type: "array"
+        items:             
+          $ref: "#/definitions/DGUHouseNrAndGeocoordinates"
+      result:
+        $ref: "#/definitions/Result"
+        
+  RisksResponse:
+    properties:
+      risks:
+        type: "array"
+        items:
+          $ref: "#/definitions/Risks"
+      result:
+        $ref: "#/definitions/Result"
+
+  Result:
+    required:
+    - "isSuccess"
+    properties:
+      isSuccess:
+        type: "boolean"
+        description: "Set to 'true' if the method call was successful, otherwise set to 'false'"
+      errorCode:
+        type: "string"
+        description: "Code of the error; not printed in case isSuccess=true"
+      errorDescription:
+        type: "string"
+        description: "Description of the error; not printed in case isSuccess=true"
+      errorDetails:
+        type: "array"
+        items:
+          type: "string"
+      sourceInfo:
+        type: "array"
+        items:
+          $ref: "#/definitions/SourceInfo"
+          
+  SourceInfo:
+    properties:
+      systemId:
+        type: "string"
+        description: "Id of the end system which returns the information."
+      type:
+        type: "string"
+        description: "Type of information (possible values: 'Info', 'Warning', 'Error')."
+      code:
+        type: "string"
+        description: "Code of information from the end system (e.g. error code)."
+      description:
+        type: "string"
+        description: "Code description from the end system (e.g. error description)."

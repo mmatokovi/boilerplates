@@ -1,0 +1,504 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: "Loyalty API"
+host: "iltest.crosig.group:6561"
+basePath: "/api/loyalty/v2"
+tags:
+- name: "Crosig loyalty"
+- name: "Agent portal 360"
+schemes:
+- "https"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+
+paths:
+  /cards:
+    get:
+      tags:
+      - "Crosig loyalty"
+      summary: "Returns a list of Crosig loyalty cards"
+      operationId: "getLoyaltyCards"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: "#/parameters/X-IL-correlationID"
+      - $ref: "#/parameters/X-IL-externalID"
+      - $ref: "#/parameters/X-IL-processName"
+      - $ref: "#/parameters/X-IL-processID"
+      - $ref: "#/parameters/X-IL-sourceSystem"
+      - $ref: "#/parameters/X-IL-customerID"
+      - $ref: "#/parameters/X-IL-userID"
+      - $ref: "#/parameters/X-IL-language"
+      - $ref: "#/parameters/X-IL-externalTimestamp"
+      - $ref: "#/parameters/X-IL-attributes"
+      - name: "changedSince"
+        in: "query"
+        description: "Date since last insert or change"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/LoyaltyCardResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+
+  /customers/overview:
+    get:
+      tags:
+      - "Agent portal 360"
+      summary: "Returns general customer information that will be displayed on the Agent Portal 360 customer overview window."
+      description: "Get customer name, last name, loyalty card PAN number and customer loyalty program activity status."
+      operationId: "getCustomerOverview"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: "#/parameters/X-IL-correlationID"
+      - $ref: "#/parameters/X-IL-externalID"
+      - $ref: "#/parameters/X-IL-processName"
+      - $ref: "#/parameters/X-IL-processID"
+      - $ref: "#/parameters/X-IL-sourceSystem"
+      - $ref: "#/parameters/X-IL-customerID"
+      - $ref: "#/parameters/X-IL-userID"
+      - $ref: "#/parameters/X-IL-language"
+      - $ref: "#/parameters/X-IL-externalTimestamp"
+      - $ref: "#/parameters/X-IL-attributes"
+      - name: "snkId"
+        in: "query"
+        description: "Crosig SNK (IFS) Id of the customer."
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/CustomerOverviewResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+                
+  /customers/transactions:
+    get:
+      tags:
+      - "Agent portal 360"
+      summary: "Returns a list of transactions between chosen dates with general transaction information."
+      description: "Get transaction information such as date, discount amount, brand name."
+      operationId: "getCustomerTransactions"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - $ref: "#/parameters/X-IL-correlationID"
+      - $ref: "#/parameters/X-IL-externalID"
+      - $ref: "#/parameters/X-IL-processName"
+      - $ref: "#/parameters/X-IL-processID"
+      - $ref: "#/parameters/X-IL-sourceSystem"
+      - $ref: "#/parameters/X-IL-customerID"
+      - $ref: "#/parameters/X-IL-userID"
+      - $ref: "#/parameters/X-IL-language"
+      - $ref: "#/parameters/X-IL-externalTimestamp"
+      - $ref: "#/parameters/X-IL-attributes"
+      - name: "snkId"
+        in: "query"
+        description: "Crosig SNK (IFS) Id of the customer."
+        required: true
+        type: "integer"
+        format: "int32"
+      - name: "transactionDateFrom"
+        in: "query"
+        description: "Transaction date from which the list will be generated."
+        required: true
+        type: "string"
+        format: "date"
+      - name: "transactionDateTo"
+        in: "query"
+        description: "Transaction date until which the list will be generated."
+        required: true
+        type: "string"
+        format: "date"
+      responses:
+        "200":
+          description: "OK (Successful case is: http code is 200 and isSuccess is true)"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            $ref: "#/definitions/CustomerTransactionsResponse"
+        "400":
+          description: "Bad Request"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "401":
+          description: "Unauthorized"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "404":
+          description: "Not Found"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+        "500":
+          description: "Internal Server Error"
+          headers:
+            X-IL-flowID:
+              description: "UUID of the flow; Unique identifier of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+            X-IL-flowName:
+              description: "Name of the flow triggered inside Integration Layer - used for easier debugging"
+              type: "string"
+          schema:
+            type: "object"
+            properties:
+              result:
+                $ref: "#/definitions/Result"
+
+parameters:
+  X-IL-correlationID:
+    name: "X-IL-correlationID"
+    in: header
+    required: false
+    type: "string"
+    description: "Unique ID used for linking of asynchronous messages"
+  X-IL-externalID:
+    name: "X-IL-externalID"
+    in: header
+    required: false
+    type: "string"
+    description: "Caller's unique ID"
+  X-IL-processName:
+    name: "X-IL-processName"
+    in: header
+    required: false
+    type: "string"
+    description: "Business process/flow name"
+  X-IL-processID:
+    name: "X-IL-processID"
+    in: header
+    required: false
+    type: "string"
+    description: "Business process/flow ID"
+  X-IL-sourceSystem:
+    name: "X-IL-sourceSystem"
+    in: header
+    required: true
+    type: "string"
+    description: "Name of the source system/caller's system"
+  X-IL-customerID:
+    name: "X-IL-customerID"
+    in: header
+    required: false
+    type: "string"
+    description: "Unique ID of the customer"
+  X-IL-userID:
+    name: "X-IL-userID"
+    in: header
+    required: false
+    type: "string"
+    description: "Unique ID of the user"
+  X-IL-language:
+    name: "X-IL-language"
+    in: header
+    required: false
+    type: "string"
+    description: "Language (ISO 639-1 code) in which data is requested (currently not used)"
+  X-IL-externalTimestamp:
+    name: "X-IL-externalTimestamp"
+    in: header
+    required: true
+    type: "string"
+    format: "date-time"
+    description: "Timestamp of the external system; mandatory (date-time format according to OpenAPI standard as defined by RFC 3339, e.g. for CEST: 2022-04-26T15:39:57.360+02:00)"
+  X-IL-attributes:
+    name: "X-IL-attributes"
+    in: header
+    required: false
+    type: "array"
+    items:
+      type: "string"
+    description: "Additional array of key-value attribute. Any attribute with the X-IL prefix which is not part of the above defined standard header fields will be put it this key-value array"
+    
+definitions:
+
+  LoyaltyCardResponse:
+    properties:
+      cards:
+        type: "array"
+        items:
+          $ref: "#/definitions/LoyaltyCardObject"
+      result:
+        $ref: "#/definitions/Result"
+        
+  LoyaltyCardObject:
+    properties:
+      pan:
+        type: "string"
+        description: "Loyalty card number"
+      isValid:
+        type: "string"
+        description: "Is card valid"
+      changeDate:
+        type: "string"
+        description: "Date of last change or insert"
+        
+  CustomerOverviewResponse:
+    properties:
+      customerOverview:
+        $ref: "#/definitions/CustomerOverviewObject"
+      result:
+        $ref: "#/definitions/Result"
+  
+  CustomerOverviewObject:
+    properties:
+      snkId:
+        type: "integer"
+        format: "int32"
+        description: "Customer SNK Id."
+      name:
+        type: "string"
+        description: "Customer's first name."
+      lastName:
+        type: "string"
+        description: "Customer's last name."
+      PAN:
+        type: "string"
+        description: "Customer's loyalty card PAN number."
+      activityStatus:
+        type: "string"
+        description: "Customer's activity status, e.g. Active, Inactive, Candidate, etc."
+      cardValidFrom:
+        type: "string"
+        example: "2022-11-20"
+      cardValidUntil:
+        type: "string"
+        example: "2022-11-30"
+      croduxUsedAmount:
+        type: "number"
+        format: "double"
+        description: "Used amount, e.g. '53'."
+      croduxTotalAmount:
+        type: "number"
+        format: "double"
+        description: "Total amount, e.g. '400'."      
+      croduxAvailableAmount:
+        type: "number"
+        format: "double"
+        description: "Available amount, e.g. '347'."
+        
+  CustomerTransactionsResponse:
+    properties:
+      customerTransactionsObject:
+        type: "array"
+        items:
+          $ref: "#/definitions/CustomerTransactionsObject"
+      result:
+        $ref: "#/definitions/Result"
+   
+  CustomerTransactionsObject:
+    properties:
+      snkId:
+        type: "integer"
+        format: "int32"
+        description: "Customer SNK Id."
+      transactionDate:
+        type: "string"
+        example: "2022-11-25T15:39:57.360+02:00"
+        description: "Date on which the transaction was made."
+      discountAmount:
+        type: "number"
+        format: "double"
+        description: "Discount amount that the customer used in this transaction."
+      slipText:
+        type: "string"
+        description: "Slip text which provides the message with additional details."
+      partnerBrand:
+        type: "string"
+        description: "Partner's brand name where the transaction was made, e.g. Crodux."
+      saleLocation:
+        type: "string"
+        description: "Location of sale name."
+      saleStreet:
+        type: "string"
+        description: "Location of sale street."
+      saleStreetNumber:
+        type: "string"
+        description: "Location of sale street number."
+      saleCity:
+        type: "string"
+        description: "Location of sale city."
+      salePostalNumber:
+        type: "string"
+        description: "Location of sale postal number."
+  
+  Result:
+    required:
+    - "isSuccess"
+    properties:
+      isSuccess:
+        type: "boolean"
+        description: "Set to 'true' if the method call was successful, otherwise set to 'false'"
+      errorCode:
+        type: "string"
+        description: "Code of the error; not printed in case isSuccess=true"
+      errorDescription:
+        type: "string"
+        description: "Description of the error; not printed in case isSuccess=true"
+      errorDetails:
+        type: "array"
+        items:
+          type: "string"
+      sourceInfo:
+        type: "array"
+        items:
+          $ref: "#/definitions/SourceInfo"
+          
+  SourceInfo:
+    properties:
+      systemId:
+        type: "string"
+        description: "Id of the end system which returns the information."
+      type:
+        type: "string"
+        description: "Type of information (possible values: 'Info', 'Warning', 'Error')."
+      code:
+        type: "string"
+        description: "Code of information from the end system (e.g. error code)."
+      description:
+        type: "string"
+        description: "Code description from the end system (e.g. error description)."
